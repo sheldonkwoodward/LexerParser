@@ -28,7 +28,7 @@ public class LexerParserTest {
         lex.tokenize();
 
         Token t1 = lex.getToken();
-        Assert.assertEquals("abc", t1.GetLexeme());
+        Assert.assertEquals("abcd", t1.GetLexeme());
         Assert.assertEquals(Sym.T_ID, t1.GetType());
 
         Token t2 = lex.getToken();
