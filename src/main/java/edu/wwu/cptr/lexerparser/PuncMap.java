@@ -1,10 +1,12 @@
+package edu.wwu.cptr.lexerparser;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class PuncMap {
     private Map<String, String> punc;
 
-    PuncMap() {
+    public PuncMap() {
         punc = new HashMap<>();
 
         // standard tokens
@@ -40,22 +42,22 @@ public class PuncMap {
         punc.put("'", "T_APOSTROPHE");
     }
 
-    boolean isPunc(String p) {
+    public boolean isPunc(String p) {
         return punc.containsKey(p);
     }
 
-    boolean isPunc(char p) {
+    public boolean isPunc(char p) {
         return punc.containsKey(Character.toString(p));
     }
 
-    String getToken(String p) {
+    public String getToken(String p) {
         if(punc.containsKey(p)) {
             return punc.get(p);
         }
         return p;
     }
 
-    String getToken(char p) {
+    public String getToken(char p) {
         if(punc.containsKey(Character.toString(p))) {
             return punc.get(Character.toString(p));
         }

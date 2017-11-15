@@ -1,3 +1,5 @@
+package edu.wwu.cptr.lexerparser;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -82,6 +84,8 @@ public class LexerParser {
                                 case "<=":
                                     c = splitArray(word, "<=", c, fsIter);
                                     break;
+                                default:
+                                    break;
                             }
 
                             // find single letter punctuations
@@ -161,6 +165,8 @@ public class LexerParser {
                                 case "'":
                                     c = splitArray(word, "'", c, fsIter);
                                     break;
+                                default:
+                                    break;
                             }
                         }
                     }
@@ -177,21 +183,21 @@ public class LexerParser {
                 String nextLex = fsIter.next();
 
                 // string start
-                if(nextLex.equals("\"") && foundString == 'f') {
+                if("\"".equals(nextLex) && foundString == 'f') {
                     foundString = 'q';
                     recom = "\"";
                     fsIter.remove();
-                } else if(nextLex.equals("'") && foundString == 'f') {
+                } else if("'".equals(nextLex) && foundString == 'f') {
                     foundString = 'a';
                     recom = "'";
                     fsIter.remove();
                 }
 
                 // string close
-                else if(nextLex.equals("\"") && foundString == 'q') {
+                else if("\"".equals(nextLex) && foundString == 'q') {
                     recom += "\"";
                     fsIter.remove();
-                } else if(nextLex.equals("'") && foundString == 'a') {
+                } else if("'".equals(nextLex) && foundString == 'a') {
                     recom += "'";
                     fsIter.remove();
                 }
@@ -207,7 +213,7 @@ public class LexerParser {
             }
             recom = recom.replace("' ", "'");
             recom = recom.replace("\" ", "\"");
-            if(!recom.equals("")) {
+            if(!"".equals(recom)) {
                 fsIter.add(recom);
             }
         }
@@ -437,7 +443,7 @@ public class LexerParser {
         return word.length();
     }
 
-    void printLexemes(String separator) {
+    public void printLexemes(String separator) {
         System.out.println("==1 LEXEMES==");
         for(ArrayList<String> line : lexemes) {
             for(String word : line) {
@@ -448,7 +454,7 @@ public class LexerParser {
         System.out.println();
     }
 
-    void printTokenStrings(String separator) {
+    public void printTokenStrings(String separator) {
         System.out.println("==2 TOKEN STRINGS==");
         for(ArrayList<String> line : tokenStrings) {
             for(String word : line) {
@@ -459,22 +465,22 @@ public class LexerParser {
         System.out.println();
     }
 
-    void printTokenLexemes(String separator) {
+    public void printTokenLexemes(String separator) {
         System.out.println("==3 TOKEN LEXEMES==");
         for(ArrayList<Token> line : tokens) {
             for(Token token : line) {
-                System.out.print(token.GetLexeme() + " " + separator + " ");
+                System.out.print(token.getLexeme() + " " + separator + " ");
             }
             System.out.println();
         }
         System.out.println();
     }
 
-    void printTokenId(String separator) {
+    public void printTokenId(String separator) {
         System.out.println("==4 TOKEN IDS==");
         for(ArrayList<Token> line : tokens) {
             for(Token token : line) {
-                System.out.print(token.GetType() + " " + separator + " ");
+                System.out.print(token.getType() + " " + separator + " ");
             }
             System.out.println();
         }

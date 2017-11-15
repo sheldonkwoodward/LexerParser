@@ -1,3 +1,5 @@
+package edu.wwu.cptr.lexerparser;
+
 public class Sym {
     /* terminals */
     public static final int T_ASSIGN = 45;

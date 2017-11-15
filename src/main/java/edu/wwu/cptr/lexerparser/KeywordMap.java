@@ -1,10 +1,12 @@
+package edu.wwu.cptr.lexerparser;
+
 import java.util.HashMap;
 import java.util.Map;
 
 class KeywordMap {
     private Map<String, String> keyword;
 
-    KeywordMap() {
+    public KeywordMap() {
         keyword = new HashMap<>();
 
         // standard tokens
@@ -45,11 +47,11 @@ class KeywordMap {
         keyword.put("EOF", "T_EOF");
     }
 
-    boolean isKeyword(String kw) {
+    public boolean isKeyword(String kw) {
         return keyword.containsKey(kw);
     }
 
-    String getToken(String kw) {
+    public String getToken(String kw) {
         if(keyword.containsKey(kw)) {
             return keyword.get(kw);
         }

@@ -1,10 +1,12 @@
+package edu.wwu.cptr.lexerparser;
+
 import java.util.HashMap;
 import java.util.Map;
 
 class IdMap {
     private Map<String, Integer> id;
 
-    IdMap() {
+    public IdMap() {
         id = new HashMap<>();
 
         // ids
@@ -84,11 +86,11 @@ class IdMap {
         id.put("T_CASE", 5);
     }
 
-    boolean isToken(String p) {
+    public boolean isToken(String p) {
         return id.containsKey(p);
     }
 
-    int getId(String p) {
+    public int getId(String p) {
         if(id.containsKey(p)) {
             return id.get(p);
         }
