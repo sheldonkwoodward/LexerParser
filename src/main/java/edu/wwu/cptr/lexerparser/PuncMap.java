@@ -56,11 +56,4 @@ public class PuncMap {
         }
         return p;
     }
-
-    public String getToken(char p) {
-        if(punc.containsKey(Character.toString(p))) {
-            return punc.get(Character.toString(p));
-        }
-        return Character.toString(p);
-    }
 }

@@ -3,7 +3,7 @@ package edu.wwu.cptr.lexerparser;
 import java.util.HashMap;
 import java.util.Map;
 
-class IdMap {
+public class IdMap {
     private Map<String, Integer> id;
 
     public IdMap() {

@@ -1,6 +1,7 @@
 package edu.wwu.cptr.lexerparser;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -21,7 +22,7 @@ public class LexerParser {
         // scanner for source file
         try {
             file = new Scanner(new File(sourceFile));
-        } catch(java.io.FileNotFoundException e) {
+        } catch(FileNotFoundException e) {
             System.out.println("Source file not found");
         }
 
@@ -37,20 +38,10 @@ public class LexerParser {
         pm = new PuncMap();
         km = new KeywordMap();
         im = new IdMap();
-
-        // split file by word
-        while(file.hasNextLine()) {
-            Scanner line = new Scanner(file.nextLine());
-            if(line.hasNext()) {
-                lexemes.add(new ArrayList<>());
-            }
-            while(line.hasNext()) {
-                lexemes.get(lexemes.size() - 1).add(line.next());
-            }
-        }
     }
 
     public void lexer() {
+        splitWords();
         splitPunc();
         combineStrings();
 
@@ -100,11 +91,24 @@ public class LexerParser {
 
                 // other
                 else {
-                    tokenStrings.get(tokenStrings.size() - 1).add(line.get(w));
+                    tokenStrings.get(tokenStrings.size() - 1).add("error");
                 }
             }
         }
         tokenize();
+    }
+
+    private void splitWords() {
+        // split file by word
+        while(file.hasNextLine()) {
+            Scanner line = new Scanner(file.nextLine());
+            if(line.hasNext()) {
+                lexemes.add(new ArrayList<>());
+            }
+            while(line.hasNext()) {
+                lexemes.get(lexemes.size() - 1).add(line.next());
+            }
+        }
     }
 
     private void splitPunc() {
@@ -465,49 +469,5 @@ public class LexerParser {
             tokenPos[0]++;
         }
         return theToken;
-    }
-
-    public void printLexemes(String separator) {
-        System.out.println("==1 LEXEMES==");
-        for(ArrayList<String> line : lexemes) {
-            for(String word : line) {
-                System.out.print(word + " " + separator + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-
-    public void printTokenStrings(String separator) {
-        System.out.println("==2 TOKEN STRINGS==");
-        for(ArrayList<String> line : tokenStrings) {
-            for(String word : line) {
-                System.out.print(word + " " + separator + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-
-    public void printTokenLexemes(String separator) {
-        System.out.println("==3 TOKEN LEXEMES==");
-        for(ArrayList<Token> line : tokens) {
-            for(Token token : line) {
-                System.out.print(token.getLexeme() + " " + separator + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-
-    public void printTokenId(String separator) {
-        System.out.println("==4 TOKEN IDS==");
-        for(ArrayList<Token> line : tokens) {
-            for(Token token : line) {
-                System.out.print(token.getType() + " " + separator + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 }
