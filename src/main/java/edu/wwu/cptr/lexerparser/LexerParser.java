@@ -1,6 +1,7 @@
 package edu.wwu.cptr.lexerparser;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -36,10 +37,8 @@ public class LexerParser {
         pm = new PuncMap();
         km = new KeywordMap();
         im = new IdMap();
-    }
 
-    public void tokenize() {
-        // split by word
+        // split file by word
         while(file.hasNextLine()) {
             Scanner line = new Scanner(file.nextLine());
             if(line.hasNext()) {
@@ -49,8 +48,66 @@ public class LexerParser {
                 lexemes.get(lexemes.size() - 1).add(line.next());
             }
         }
+    }
 
-        // break punctuation into separate Strings
+    public void lexer() {
+        splitPunc();
+        combineStrings();
+
+        // convert punctuation and keywords to token strings
+        for(ArrayList<String> line : lexemes) {
+            tokenStrings.add(new ArrayList<>());
+            for(int w = 0; w < line.size(); w++) {
+
+                // punctuation
+                if(pm.isPunc(line.get(w))) {
+                    tokenStrings.get(tokenStrings.size() - 1).add(pm.getToken(line.get(w)));
+                }
+
+                // keyword
+                else if(km.isKeyword(line.get(w))) {
+                    tokenStrings.get(tokenStrings.size() - 1).add(km.getToken(line.get(w)));
+                }
+
+                // T_ID
+                else if(line.get(w).matches("([A-Z]|[a-z])([A-Z]|[a-z]|[0-9])+")) {
+                    if(!line.get(w).matches("([A-Z]|[a-z])([A-Z]|[a-z]|[0-9]){0,39}")) {
+                        System.out.println("identifier too long");
+                        line.set(w, line.get(w).substring(0, 40));
+                    }
+                    tokenStrings.get(tokenStrings.size() - 1).add("T_ID");
+                }
+
+                // T_INT_LITERAL
+                else if(line.get(w).matches("0*([0-9A-F])+H?")) {
+                    stringifyINT_LITERAL(line, w);
+                }
+
+                // T_STR_LITERAL
+                else if(line.get(w).charAt(0) == '"' || line.get(w).charAt(0) == '\'') {
+                    stringifySTR_LITERAL(line, w);
+                }
+
+                // T_REAL_LITERAL
+                else if(line.get(w).matches("([0-9]|\\.)+([DE][0-9]+)?")) {
+                    stringifyREAL_LITERAL(line, w);
+                }
+
+                // T_CHAR_LITERAL
+                else if(line.get(w).matches("0*[0-9A-F]+X")) {
+                    stringifyCHAR_LITERAL(line, w);
+                }
+
+                // other
+                else {
+                    tokenStrings.get(tokenStrings.size() - 1).add(line.get(w));
+                }
+            }
+        }
+        tokenize();
+    }
+
+    private void splitPunc() {
         for(ArrayList<String> line : lexemes) {
             ListIterator<String> fsIter = line.listIterator();
             while(fsIter.hasNext()) {
@@ -173,8 +230,9 @@ public class LexerParser {
                 }
             }
         }
+    }
 
-        // re-combine strings
+    private void combineStrings() {
         for(ArrayList<String> line : lexemes) {
             ListIterator<String> fsIter = line.listIterator();
             char foundString = 'f';
@@ -217,184 +275,150 @@ public class LexerParser {
                 fsIter.add(recom);
             }
         }
+    }
 
-        // convert punctuation and keywords to token strings
-        for(ArrayList<String> line : lexemes) {
-            tokenStrings.add(new ArrayList<>());
-            for(int w = 0; w < line.size(); w++) {
-
-                // punctuation
-                if(pm.isPunc(line.get(w))) {
-                    tokenStrings.get(tokenStrings.size() - 1).add(pm.getToken(line.get(w)));
-                }
-
-                // keyword
-                else if(km.isKeyword(line.get(w))) {
-                    tokenStrings.get(tokenStrings.size() - 1).add(km.getToken(line.get(w)));
-                }
-
-                // T_ID
-                else if(line.get(w).matches("([A-Z]|[a-z])([A-Z]|[a-z]|[0-9])+")) {
-                    if(!line.get(w).matches("([A-Z]|[a-z])([A-Z]|[a-z]|[0-9]){0,39}")) {
-                        System.out.println("identifier too long");
-                        line.set(w, line.get(w).substring(0, 40));
-                    }
-                    tokenStrings.get(tokenStrings.size() - 1).add("T_ID");
-                }
-
-                // T_INT_LITERAL
-                else if(line.get(w).matches("0*([0-9A-F])+H?")) {
-                    // remove leading zeros
-                    String INT_LITERAL = line.get(w);
-                    while(INT_LITERAL.charAt(0) == '0' && INT_LITERAL.length() > 1) {
-                        INT_LITERAL = INT_LITERAL.substring(1);
-                    }
-
-                    // proper integer
-                    if(INT_LITERAL.matches("([0-9]){1,10}") || INT_LITERAL.matches("([0-9A-F]){1,10}H")) {
-                        line.set(w, INT_LITERAL);
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
-                    }
-                    // decimal integer literal too long error
-                    else if(INT_LITERAL.matches("([0-9]){11,}")) {
-                        System.out.println("integer literal too long");
-                        line.set(w, INT_LITERAL.substring(0, 10));
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
-                    }
-                    // hex integer literal too long error
-                    else if(INT_LITERAL.matches("([0-9A-F]){11,}H")) {
-                        System.out.println("integer literal too long");
-                        line.set(w, INT_LITERAL.substring(0, 10) + "H");
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
-                    }
-                    // illegal hex integer literal error
-                    else if(INT_LITERAL.matches("([0-9A-F])+")) {
-                        System.out.println("illegal hex integer literal");
-                        if(INT_LITERAL.length() > 10) {
-                            INT_LITERAL = INT_LITERAL.substring(0, 10);
-                        }
-                        line.set(w, INT_LITERAL + "H");
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
-                    }
-                }
-
-                // T_STR_LITERAL
-                else if(line.get(w).charAt(0) == '"' || line.get(w).charAt(0) == '\'') {
-                    char firstChar = line.get(w).charAt(0);
-                    char lastChar = line.get(w).charAt(line.get(w).length() - 1);
-                    String STR_LITERAL = line.get(w);
-
-                    // fix missing closure
-                    if(firstChar != lastChar) {
-                        System.out.println("unterminated string literal");
-                        STR_LITERAL = STR_LITERAL.substring(0, 81) + firstChar;
-                    }
-                    // over length
-                    if(firstChar == lastChar && line.get(w).length() > 82) {
-                        System.out.println("newline/EOF in string");
-                        STR_LITERAL = STR_LITERAL.substring(0, 81) + firstChar;
-                    }
-
-                    STR_LITERAL = STR_LITERAL.substring(1, STR_LITERAL.length() - 1);
-                    line.set(w, STR_LITERAL);
-                    tokenStrings.get(tokenStrings.size() - 1).add("T_STR_LITERAL");
-                }
-
-                // T_REAL_LITERAL
-                else if(line.get(w).matches("([0-9]|\\.)+([DE][0-9]+)?")) {
-                    // remove mantissa zeros
-                    String REAL = line.get(w);
-                    while(REAL.charAt(0) == '0') {
-                        REAL = REAL.substring(1);
-                    }
-
-                    // remove exponent zeros
-                    int expIndex = (REAL.indexOf('D') > REAL.indexOf('E') ? REAL.indexOf('D') : REAL.indexOf('E'));
-                    if(expIndex != -1) {
-                        while(REAL.charAt(expIndex + 1) == '0') {
-                            REAL = REAL.substring(0, expIndex + 1) + REAL.substring(expIndex + 2);
-                        }
-                    }
-                    if(expIndex == -1) {
-                        expIndex = REAL.length() - 1;
-                    }
-
-                    // proper real
-                    if(REAL.matches("[0-9]+\\.[0-9]*([DE][0-9]+)?") && REAL.matches("[1-9]([0-9]|\\.){1,9}([DE][1-9]{1,3})?")) {
-                        line.set(w, REAL);
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
-                    }
-                    // real literal exponent too long
-                    else if(REAL.matches("[0-9]+\\.[0-9]*[DE][0-9]{4,}")) {
-                        System.out.println("real literal exponent too long");
-                        line.set(w, REAL.substring(0, expIndex + 4));
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
-                    }
-                    // real literal . at mantissa start
-                    else if(REAL.charAt(0) == '.') {
-                        System.out.println("real literal . at mantissa start");
-                        line.set(w, "0" + REAL);
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
-                    }
-                    // real literal more than one .
-                    else if(REAL.length() - REAL.replace(".", "").length() > 1) {
-                        System.out.println("real literal more than one .");
-                        int foundDot = -1;
-                        for(int i = 0; i < REAL.length(); i++) {
-                            if(REAL.charAt(i) == '.') {
-                                foundDot = i;
-                                break;
-                            }
-                        }
-                        REAL = REAL.replace(".", "");
-                        REAL = REAL.substring(0, foundDot) + "." + REAL.substring(foundDot);
-
-                        line.set(w, REAL);
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
-                    }
-                    // real literal mantissa too long
-                    else if(REAL.substring(0, expIndex + 1).length() > 10) {
-                        System.out.println("real literal mantissa too long");
-                        String mantissa = REAL.substring(0, expIndex + 1);
-                        if(mantissa.charAt(mantissa.length() - 1) == '.') {
-                            mantissa = mantissa.substring(0, 9);
-                            REAL = mantissa + REAL.substring(expIndex);
-                        } else {
-                            REAL = REAL.substring(0, 10);
-                        }
-
-                        line.set(w, REAL);
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
-                    } else {
-                        tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
-                    }
-                }
-
-                // T_CHAR_LITERAL
-                else if(line.get(w).matches("0*[0-9A-F]+X")) {
-                    String CHAR_LITERAL = line.get(w);
-                    while(CHAR_LITERAL.charAt(0) == '0' && CHAR_LITERAL.length() > 1) {
-                        CHAR_LITERAL = CHAR_LITERAL.substring(1);
-                    }
-
-                    // proper
-                    if(CHAR_LITERAL.matches("[0-9A-F]{1,3}X")) {
-                        line.set(w, CHAR_LITERAL);
-                    } else if(CHAR_LITERAL.matches("[0-9A-F]{4,}X")) {
-                        System.out.println("illegal character literal");
-                        line.set(w, CHAR_LITERAL.substring(0, 3) + "X");
-                    }
-                    tokenStrings.get(tokenStrings.size() - 1).add("T_CHAR_LITERAL");
-                }
-
-                // other
-                else {
-                    tokenStrings.get(tokenStrings.size() - 1).add(line.get(w));
-                }
-            }
+    private void stringifyINT_LITERAL(ArrayList<String> line, int w) {
+        // remove leading zeros
+        String INT_LITERAL = line.get(w);
+        while(INT_LITERAL.charAt(0) == '0' && INT_LITERAL.length() > 1) {
+            INT_LITERAL = INT_LITERAL.substring(1);
         }
 
-        // tokenize
+        // proper integer
+        if(INT_LITERAL.matches("([0-9]){1,10}") || INT_LITERAL.matches("([0-9A-F]){1,10}H")) {
+            line.set(w, INT_LITERAL);
+            tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
+        }
+        // decimal integer literal too long error
+        else if(INT_LITERAL.matches("([0-9]){11,}")) {
+            System.out.println("integer literal too long");
+            line.set(w, INT_LITERAL.substring(0, 10));
+            tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
+        }
+        // hex integer literal too long error
+        else if(INT_LITERAL.matches("([0-9A-F]){11,}H")) {
+            System.out.println("integer literal too long");
+            line.set(w, INT_LITERAL.substring(0, 10) + "H");
+            tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
+        }
+        // illegal hex integer literal error
+        else if(INT_LITERAL.matches("([0-9A-F])+")) {
+            System.out.println("illegal hex integer literal");
+            if(INT_LITERAL.length() > 10) {
+                INT_LITERAL = INT_LITERAL.substring(0, 10);
+            }
+            line.set(w, INT_LITERAL + "H");
+            tokenStrings.get(tokenStrings.size() - 1).add("T_INT_LITERAL");
+        }
+    }
+
+    private void stringifySTR_LITERAL(ArrayList<String> line, int w) {
+        char firstChar = line.get(w).charAt(0);
+        char lastChar = line.get(w).charAt(line.get(w).length() - 1);
+        String STR_LITERAL = line.get(w);
+
+        // fix missing closure
+        if(firstChar != lastChar) {
+            System.out.println("unterminated string literal");
+            STR_LITERAL = STR_LITERAL.substring(0, 81) + firstChar;
+        }
+        // over length
+        if(firstChar == lastChar && line.get(w).length() > 82) {
+            System.out.println("newline/EOF in string");
+            STR_LITERAL = STR_LITERAL.substring(0, 81) + firstChar;
+        }
+
+        STR_LITERAL = STR_LITERAL.substring(1, STR_LITERAL.length() - 1);
+        line.set(w, STR_LITERAL);
+        tokenStrings.get(tokenStrings.size() - 1).add("T_STR_LITERAL");
+    }
+
+    private void stringifyREAL_LITERAL(ArrayList<String> line, int w) {
+        // remove mantissa zeros
+        String REAL = line.get(w);
+        while(REAL.charAt(0) == '0') {
+            REAL = REAL.substring(1);
+        }
+
+        // remove exponent zeros
+        int expIndex = (REAL.indexOf('D') > REAL.indexOf('E') ? REAL.indexOf('D') : REAL.indexOf('E'));
+        if(expIndex != -1) {
+            while(REAL.charAt(expIndex + 1) == '0') {
+                REAL = REAL.substring(0, expIndex + 1) + REAL.substring(expIndex + 2);
+            }
+        }
+        if(expIndex == -1) {
+            expIndex = REAL.length() - 1;
+        }
+
+        // proper real
+        if(REAL.matches("[0-9]+\\.[0-9]*([DE][0-9]+)?") && REAL.matches("[1-9]([0-9]|\\.){1,9}([DE][1-9]{1,3})?")) {
+            line.set(w, REAL);
+            tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
+        }
+        // real literal exponent too long
+        else if(REAL.matches("[0-9]+\\.[0-9]*[DE][0-9]{4,}")) {
+            System.out.println("real literal exponent too long");
+            line.set(w, REAL.substring(0, expIndex + 4));
+            tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
+        }
+        // real literal . at mantissa start
+        else if(REAL.charAt(0) == '.') {
+            System.out.println("real literal . at mantissa start");
+            line.set(w, "0" + REAL);
+            tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
+        }
+        // real literal more than one .
+        else if(REAL.length() - REAL.replace(".", "").length() > 1) {
+            System.out.println("real literal more than one .");
+            int foundDot = -1;
+            for(int i = 0; i < REAL.length(); i++) {
+                if(REAL.charAt(i) == '.') {
+                    foundDot = i;
+                    break;
+                }
+            }
+            REAL = REAL.replace(".", "");
+            REAL = REAL.substring(0, foundDot) + "." + REAL.substring(foundDot);
+
+            line.set(w, REAL);
+            tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
+        }
+        // real literal mantissa too long
+        else if(REAL.substring(0, expIndex + 1).length() > 10) {
+            System.out.println("real literal mantissa too long");
+            String mantissa = REAL.substring(0, expIndex + 1);
+            if(mantissa.charAt(mantissa.length() - 1) == '.') {
+                mantissa = mantissa.substring(0, 9);
+                REAL = mantissa + REAL.substring(expIndex);
+            } else {
+                REAL = REAL.substring(0, 10);
+            }
+
+            line.set(w, REAL);
+            tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
+        } else {
+            tokenStrings.get(tokenStrings.size() - 1).add("T_REAL_LITERAL");
+        }
+    }
+
+    private void stringifyCHAR_LITERAL(ArrayList<String> line, int w) {
+        String CHAR_LITERAL = line.get(w);
+        while(CHAR_LITERAL.charAt(0) == '0' && CHAR_LITERAL.length() > 1) {
+            CHAR_LITERAL = CHAR_LITERAL.substring(1);
+        }
+
+        // proper
+        if(CHAR_LITERAL.matches("[0-9A-F]{1,3}X")) {
+            line.set(w, CHAR_LITERAL);
+        } else if(CHAR_LITERAL.matches("[0-9A-F]{4,}X")) {
+            System.out.println("illegal character literal");
+            line.set(w, CHAR_LITERAL.substring(0, 3) + "X");
+        }
+        tokenStrings.get(tokenStrings.size() - 1).add("T_CHAR_LITERAL");
+    }
+
+    private void tokenize() {
         for(int i = 0; i < lexemes.size(); i++) {
             // no special tokens
             if(lexemes.get(i).size() == tokenStrings.get(i).size()) {
@@ -406,17 +430,6 @@ public class LexerParser {
                 tokens.add(new ArrayList<>());
             }
         }
-    }
-
-    public Token getToken() {
-        Token theToken = tokens.get(tokenPos[0]).get(tokenPos[1]);
-        if(tokenPos[1] < tokens.get(tokenPos[0]).size() - 1) {
-            tokenPos[1]++;
-        } else {
-            tokenPos[1] = 0;
-            tokenPos[0]++;
-        }
-        return theToken;
     }
 
     private int splitArray(String word, String middle, int c, ListIterator<String> fsIter) {
@@ -441,6 +454,17 @@ public class LexerParser {
         }
 
         return word.length();
+    }
+
+    public Token getToken() {
+        Token theToken = tokens.get(tokenPos[0]).get(tokenPos[1]);
+        if(tokenPos[1] < tokens.get(tokenPos[0]).size() - 1) {
+            tokenPos[1]++;
+        } else {
+            tokenPos[1] = 0;
+            tokenPos[0]++;
+        }
+        return theToken;
     }
 
     public void printLexemes(String separator) {

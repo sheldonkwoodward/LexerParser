@@ -12,7 +12,7 @@ public class LexerParserTest {
     @Test
     public void testPunc() {
         lex = new LexerParser("src/test_texts/testPunc.txt");
-        lex.tokenize();
+        lex.lexer();
         Token t1 = lex.getToken();
         Assert.assertEquals("*", t1.getLexeme());
         Assert.assertEquals(Sym.T_STAR, t1.getType());
@@ -21,7 +21,7 @@ public class LexerParserTest {
     @Test
     public void testKeyword() {
         lex = new LexerParser("src/test_texts/testKeywork.txt");
-        lex.tokenize();
+        lex.lexer();
         Token t1 = lex.getToken();
         Assert.assertEquals("MODULE", t1.getLexeme());
         Assert.assertEquals(Sym.T_MODULE, t1.getType());
@@ -30,7 +30,7 @@ public class LexerParserTest {
     @Test
     public void testId() {
         lex = new LexerParser("src/test_texts/testId.txt");
-        lex.tokenize();
+        lex.lexer();
 
         Token t1 = lex.getToken();
         Assert.assertEquals("abcd", t1.getLexeme());
@@ -44,7 +44,7 @@ public class LexerParserTest {
     @Test
     public void testIntLiteral() {
         lex = new LexerParser("src/test_texts/testIntLiteral.txt");
-        lex.tokenize();
+        lex.lexer();
 
         Token t1 = lex.getToken();
         Assert.assertEquals(Sym.T_INT_LITERAL, t1.getType());
@@ -82,7 +82,7 @@ public class LexerParserTest {
     @Test
     public void testStrLiteral() {
         lex = new LexerParser("src/test_texts/testStrLiteral.txt");
-        lex.tokenize();
+        lex.lexer();
 
         Token t1 = lex.getToken();
         Assert.assertEquals("Hello", t1.getLexeme());
@@ -120,7 +120,7 @@ public class LexerParserTest {
     @Test
     public void testRealLiteral() {
         lex = new LexerParser("src/test_texts/testRealLiteral.txt");
-        lex.tokenize();
+        lex.lexer();
 
         Token t1 = lex.getToken();
         Assert.assertEquals(Sym.T_REAL_LITERAL, t1.getType());
@@ -170,7 +170,7 @@ public class LexerParserTest {
     @Test
     public void testCharLiteral() {
         lex = new LexerParser("src/test_texts/testCharLiteral.txt");
-        lex.tokenize();
+        lex.lexer();
 
         Token t1 = lex.getToken();
         Assert.assertEquals("ABCX", t1.getLexeme());
@@ -196,7 +196,7 @@ public class LexerParserTest {
     @Test
     public void testGetToken() {
         lex = new LexerParser("src/test_texts/testGetToken.txt");
-        lex.tokenize();
+        lex.lexer();
         Token t1 = lex.getToken();
         Assert.assertEquals("abc", t1.getLexeme());
         Assert.assertEquals(Sym.T_ID, t1.getType());
