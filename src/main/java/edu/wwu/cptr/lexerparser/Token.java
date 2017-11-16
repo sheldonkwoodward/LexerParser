@@ -1,19 +1,19 @@
 package edu.wwu.cptr.lexerparser;
 
 public class Token {
-    private int m_nType;
-    private String m_strLexeme;
+    private int tokenId;
+    private String tokenLexeme;
 
-    public Token(int nType, String strLexeme) {
-        m_nType = nType;
-        m_strLexeme = strLexeme;
+    public Token(int id, String lexeme) {
+        tokenId = id;
+        tokenLexeme = lexeme;
     }
 
-    public String getLexeme() {
-        return (m_strLexeme);
+    public String getTokenLexeme() {
+        return (tokenLexeme);
     }
 
-    public int getType() {
-        return (m_nType);
+    public int getTokenId() {
+        return (tokenId);
     }
 }
