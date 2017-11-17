@@ -1,3 +1,5 @@
+https://travis-ci.org/sheldonkwoodward/lexerparser.svg?branch=master
+
 # CPTR245: Lab 2 - Tools
 
 The lab this week focuses on using tools to improve your code quality.
