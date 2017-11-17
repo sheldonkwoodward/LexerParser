@@ -1,4 +1,4 @@
-https://travis-ci.org/sheldonkwoodward/lexerparser.svg?branch=master
+[![Build Status](https://travis-ci.org/sheldonkwoodward/lexerparser.svg?branch=master)](https://travis-ci.org/sheldonkwoodward/lexerparser)
 
 # CPTR245: Lab 2 - Tools
 
