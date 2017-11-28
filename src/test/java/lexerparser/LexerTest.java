@@ -1,14 +1,14 @@
 package lexerparser;
 
-import edu.wwu.cptr.lexerparser.LexerParser;
-import edu.wwu.cptr.lexerparser.IdMap;
-import edu.wwu.cptr.lexerparser.Token;
+import edu.wwu.cptr.lexer.Lexer;
+import edu.wwu.cptr.lexer.IdMap;
+import edu.wwu.cptr.lexer.Token;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class LexerParserTest {
-    private LexerParser lex;
+public class LexerTest {
+    private Lexer lex;
     private IdMap id;
 
     @Before
@@ -18,7 +18,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerPuncOneLong() {
-        lex = new LexerParser("src/test_texts/testPuncOneLong.txt");
+        lex = new Lexer("src/test_texts/testPuncOneLong.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -112,7 +112,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerPuncTwoLong() {
-        lex = new LexerParser("src/test_texts/testPuncTwoLong.txt");
+        lex = new Lexer("src/test_texts/testPuncTwoLong.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -134,7 +134,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerKeyword() {
-        lex = new LexerParser("src/test_texts/testKeywork.txt");
+        lex = new Lexer("src/test_texts/testKeywork.txt");
         lex.lexer();
         Token t1 = lex.getToken();
         Assert.assertEquals("MODULE", t1.getTokenLexeme());
@@ -143,7 +143,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerId() {
-        lex = new LexerParser("src/test_texts/testId.txt");
+        lex = new Lexer("src/test_texts/testId.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -157,7 +157,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerIntLiteral() {
-        lex = new LexerParser("src/test_texts/testIntLiteral.txt");
+        lex = new Lexer("src/test_texts/testIntLiteral.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -195,7 +195,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerStrLiteral() {
-        lex = new LexerParser("src/test_texts/testStrLiteral.txt");
+        lex = new Lexer("src/test_texts/testStrLiteral.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -233,7 +233,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerRealLiteral() {
-        lex = new LexerParser("src/test_texts/testRealLiteral.txt");
+        lex = new Lexer("src/test_texts/testRealLiteral.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -283,7 +283,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerCharLiteral() {
-        lex = new LexerParser("src/test_texts/testCharLiteral.txt");
+        lex = new Lexer("src/test_texts/testCharLiteral.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -309,7 +309,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerUnknownLexeme() {
-        lex = new LexerParser("src/test_texts/testUnknownLexeme.txt");
+        lex = new Lexer("src/test_texts/testUnknownLexeme.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -319,7 +319,7 @@ public class LexerParserTest {
 
     @Test
     public void testLexerMultiWordLine() {
-        lex = new LexerParser("src/test_texts/testMultiWordLine.txt");
+        lex = new Lexer("src/test_texts/testMultiWordLine.txt");
         lex.lexer();
 
         Token t1 = lex.getToken();
@@ -341,7 +341,7 @@ public class LexerParserTest {
 
     @Test
     public void testGetToken() {
-        lex = new LexerParser("src/test_texts/testGetToken.txt");
+        lex = new Lexer("src/test_texts/testGetToken.txt");
         lex.lexer();
         Token t1 = lex.getToken();
         Assert.assertEquals("abc", t1.getTokenLexeme());

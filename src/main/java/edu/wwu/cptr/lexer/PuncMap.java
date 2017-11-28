@@ -1,4 +1,4 @@
-package edu.wwu.cptr.lexerparser;
+package edu.wwu.cptr.lexer;
 
 import java.util.HashMap;
 import java.util.Map;

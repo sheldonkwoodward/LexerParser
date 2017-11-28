@@ -1,4 +1,4 @@
-package edu.wwu.cptr.lexerparser;
+package edu.wwu.cptr.lexer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-public class LexerParser {
+public class Lexer {
     private Scanner file;
 
     private ArrayList<ArrayList<String>> lexemes;
@@ -19,7 +19,7 @@ public class LexerParser {
     private KeywordMap km;
     private IdMap im;
 
-    public LexerParser(String sourceFile) {
+    public Lexer(String sourceFile) {
         // scanner for source file
         try {
             file = new Scanner(new File(sourceFile));

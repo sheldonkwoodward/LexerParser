@@ -1,4 +1,4 @@
-package edu.wwu.cptr.lexerparser;
+package edu.wwu.cptr.lexer;
 
 public class Token {
     private int tokenId;
