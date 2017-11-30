@@ -1,31 +1,33 @@
-MODULE Figures; (* Abstract module *)
+PROGRAM theProgram;
 
-TYPE
-   Figure*    = POINTER TO FigureDesc;
-   Interface* = POINTER TO InterfaceDesc;
+VAR a, b, c : INTEGER;
 
-   InterfaceDesc* = RECORD
-      draw*  : PROCEDURE (ff : Figure);
-      clear* : PROCEDURE (ff : Figure);
-      mark*  : PROCEDURE (ff : Figure);
-      move*  : PROCEDURE (ff : Figure; dx, dy : INTEGER);
-   END;
-
-   FigureDesc* = RECORD
-      if : Interface;
-      "argseth weh rth"
-   END;
-
-PROCEDURE Init* (ff : Figure; if : Interface);
+PROCEDURE Handle* (f: Figure; VAR msg: Figures.Message);
+   VAR
+      r : Rectangle;
 BEGIN
-   ff.if := if;
-END Init;
+   r := f(Rectangle);
+   IF    msg IS Figures.DrawMsg THEN Draw(r)
+   END
+END Handle;
 
-PROCEDURE Draw* (ff : Figure);
+VAR x, y, z : INTEGER;
+
+
+MODULE Rectangles;
+VAR x, y, z : INTEGER;
+PROCEDURE Handle* (f: Figure; VAR msg: Figures.Message);
+   VAR
+      r : Rectangle;
 BEGIN
-   ff.draw(ff);
-END Draw;
+   r := f(Rectangle);
+   IF    msg IS Figures.DrawMsg THEN Draw(r)
+   END
+END Handle;
+END Rectangles.
 
-(* Other procedures here *)
+BEGIN
+    IF    msg IS Figures.DrawMsg THEN Draw(r)
+END
 
-END Figures. EOF
+END theProgram.

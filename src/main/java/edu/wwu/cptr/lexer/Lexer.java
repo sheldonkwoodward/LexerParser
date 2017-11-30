@@ -11,7 +11,7 @@ public class Lexer {
 
     private ArrayList<ArrayList<String>> lexemes;
     private ArrayList<ArrayList<String>> tokenStrings;
-    private ArrayList<ArrayList<Token>> tokens;
+    private ArrayList<ArrayList<LexerToken>> tokens;
 
     private int[] tokenPos;
 
@@ -26,6 +26,24 @@ public class Lexer {
         } catch(FileNotFoundException e) {
             System.out.println("Source file not found");
         }
+
+        // initializations
+        lexemes = new ArrayList<>();
+        tokenStrings = new ArrayList<>();
+        tokens = new ArrayList<>();
+
+        tokenPos = new int[2];
+        tokenPos[0] = 0;
+        tokenPos[1] = 0;
+
+        pm = new PuncMap();
+        km = new KeywordMap();
+        im = new IdMap();
+    }
+
+    public Lexer(java.io.InputStream stream) {
+        // scanner for source file
+        file = new Scanner(stream);
 
         // initializations
         lexemes = new ArrayList<>();
@@ -399,7 +417,7 @@ public class Lexer {
             if(lexemes.get(i).size() == tokenStrings.get(i).size()) {
                 tokens.add(new ArrayList<>());
                 for(int w = 0; w < lexemes.get(i).size(); w++) {
-                    tokens.get(i).add(new Token(im.getId(tokenStrings.get(i).get(w)), lexemes.get(i).get(w)));
+                    tokens.get(i).add(new LexerToken(im.getId(tokenStrings.get(i).get(w)), lexemes.get(i).get(w)));
                 }
             } else {
                 tokens.add(new ArrayList<>());
@@ -430,8 +448,8 @@ public class Lexer {
         return word.length();
     }
 
-    public Token getToken() {
-        Token theToken = tokens.get(tokenPos[0]).get(tokenPos[1]);
+    public LexerToken getToken() {
+        LexerToken theToken = tokens.get(tokenPos[0]).get(tokenPos[1]);
         if(tokenPos[1] < tokens.get(tokenPos[0]).size() - 1) {
             tokenPos[1]++;
         } else {

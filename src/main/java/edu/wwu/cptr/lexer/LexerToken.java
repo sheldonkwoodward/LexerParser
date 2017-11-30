@@ -1,10 +1,10 @@
 package edu.wwu.cptr.lexer;
 
-public class Token {
+public class LexerToken {
     private int tokenId;
     private String tokenLexeme;
 
-    public Token(int id, String lexeme) {
+    public LexerToken(int id, String lexeme) {
         tokenId = id;
         tokenLexeme = lexeme;
     }
