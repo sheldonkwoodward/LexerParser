@@ -7,7 +7,7 @@ PROCEDURE Handle* (f: Figure; VAR msg: Figures.Message);
       r : Rectangle;
 BEGIN
    r := f(Rectangle);
-   IF    msg IS Figures.DrawMsg THEN Draw(r)
+   IF    msg IS Figures.DrawMsg
    END
 END Handle;
 
@@ -16,7 +16,7 @@ VAR x, y, z : INTEGER;
 
 MODULE Rectangles;
 VAR x, y, z : INTEGER;
-PROCEDURE Handle* (f: Figure; VAR msg: Figures.Message);
+PROCEDURE Handle* (f: Figure; VAR msg: Figures.Message; VAR msg2: Figures.Message2);
    VAR
       r : Rectangle;
 BEGIN
